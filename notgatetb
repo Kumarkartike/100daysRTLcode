@@ -1,0 +1,12 @@
+module not_gate_tb;
+reg a;
+wire b;
+not_gate dut(.a(a), .b(b));
+initial
+begin
+$display("a=%b, b=%b", a,b);
+#10; a=1;
+#10; a=0;
+#20; $finish;
+end
+endmodule
