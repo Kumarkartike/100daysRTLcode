@@ -1,0 +1,14 @@
+module half_substaractor_tb;
+reg a,b;
+wire borrow,difference;
+half_substaractor dut(.a(a), .b(b), .borrow(borrow), .difference(difference));
+initial begin
+$display("a=%b, b=%b, borrow=%b, difference=%b",a,b,borrow,difference);
+#25; a=0; b=0;
+#25; a=0; b=1;
+#25; a=1; b=0;
+#25; a=1; b=1;
+#25;
+$finish;
+end
+endmodule
