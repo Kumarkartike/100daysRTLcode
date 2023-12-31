@@ -1,0 +1,28 @@
+module Mux_8to1_tb;
+
+reg [7:0] data_in;
+reg [2:0] sel;
+wire out;
+
+Mux_8to1 dut (
+    .data_in(data_in),
+    .sel(sel),
+    .out(out)
+);
+
+initial begin
+    $monitor("Time=%0t, Data=%b, Sel=%b, Output=%b", $time, data_in, sel, out);
+    
+    data_in = 8'b11001100;
+    sel = 3'b000;
+    #10;
+    
+    data_in = 8'b10101010;
+    sel = 3'b111;
+    #10;
+    
+    
+    $finish;
+end
+
+endmodule
