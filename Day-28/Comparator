@@ -1,0 +1,16 @@
+module Bitcomparator(a,b,equal,greater,lower);
+
+input a;
+input b;
+
+output equal;
+output greater;
+output lower;
+
+
+
+assign equal = a~^b;
+assign lower = (~a)&b;
+assign greater = a&(~b);
+
+endmodule
