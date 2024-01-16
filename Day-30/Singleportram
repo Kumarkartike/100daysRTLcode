@@ -1,0 +1,24 @@
+module Singleportram(
+                     data_in,  
+                      wr_en,
+                      addr,
+                      clk,
+                      data_out
+                      );
+
+input clk, wr_en;  
+input [2:0]addr;
+input [127:0] data_in;
+output [127:0] data_out;
+reg [127:0] ram_vector [7:0];
+reg [2:0] read_addr;  
+
+always @ (posedge clk)
+begin
+if (wr_en)
+ram_vector[addr] <= data_in;
+read_addr <= addr
+end
+assign data_out = ram_vector[read_addr];
+
+endmodule
