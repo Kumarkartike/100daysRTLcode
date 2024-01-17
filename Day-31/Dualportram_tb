@@ -1,0 +1,72 @@
+module Dualportram_tb();
+
+reg            clk;
+reg            wr_en_a, wr_en_b;
+reg   [  2:0]  addr_a, addr_b;
+reg   [127:0]  data_in_a, data_in_b;
+wire  [127:0]  data_out_a, data_out_b;
+reg   [127:0]  ram_vector [7:0];
+reg   [  2:0]  out_a, out_b;
+
+
+Dualportram dut(
+                  .data_in_a  (data_in_a  ),
+                  .wr_en_a    (wr_en_a    ),       
+                  .addr_a     (addr_a     ),       
+                  .data_in_b  (data_in_b  ),        
+                  .wr_en_b    (wr_en_b    ),      
+                  .addr_b     (addr_b     ),        
+                  .clk        (clk        ),        
+                  .data_out_a (data_out_a ),        
+                  .data_out_b (data_out_b ),       
+                   )                               ;
+
+initial begin
+clk=0;
+forever #5 clk = ~clk;
+end
+
+initial begin
+repeat(1)
+begin
+stimulus;
+if((out_a == data_out_a) && (out_b == data_out_b))
+$display("addr_a =%b,addr_b =%b,data_in_a =%b,data_in_b =%b,dataout_a =%b,dout_b =%b: Testcase Passed",addr_a,addr_b,data_in_a,data_in_b,data_out_a,data_out_b);
+else
+$display("addr_a =%b,addr_b =%b,data_in_a =%b,data_in_b =%b,dataout_a =%b,dout_b =%b: Testcase Failed",addr_a,addr_b,data_in_a,data_in_b,data_out_a,data_out_b);
+end
+#200 $finish                                    ;
+end
+
+
+task stimulus                                     
+begin
+         addr_a = $random;                        
+         data_in_a  = $random;                   
+
+         addr_b = $random;                          
+         data_in_b  = $random;                      
+
+         wr_en_a   = 1;
+         wr_en_b   = 1;#5;
+
+         wr_en_a   = 0;
+         wr_en_b   = 0;#5;
+
+         if(wr_en_a)
+            ram_vector[addr_a]   = data_in_a;           
+         else
+            out_a                = ram_vector[addr_a];
+         if(wr_en_b )
+            ram_vector[addr_b]   = data_in_b;
+         else
+            out_b                = ram_vector[addr_b];
+     
+         if(addr_a == addr_b)
+            out_a = data_in_b;
+            out_b = data_in_b;
+      end
+ endtask 
+
+endmodule                                               
+
