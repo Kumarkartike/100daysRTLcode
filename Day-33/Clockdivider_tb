@@ -1,0 +1,57 @@
+module ClockDivider_tb();                               
+
+reg         clk,reset;      
+wire        out_clk;        
+reg         new_clk;      
+reg [1:0]   clk_count;     
+
+ClockDivider dut(
+           .clk(clk),
+           .reset(reset), 
+           .out_clk(out_clk),                       
+            ); 
+            
+ initial begin
+   new_clk     =  1'b0;
+   clk_count   =  2'b0;
+   end
+
+ initial begin         
+   clk      =  1'b0;             
+   #1 reset =  1'b1;
+   stimulus; 
+   #200 $finish;
+ end
+
+ task stimulus;
+   repeat(30)
+      begin
+         #3 clk      =  ~clk; 
+         #10 reset   =  1'b0;
+         verify(clk);
+      end
+ endtask
+
+ task verify ;
+   input clk;
+   parameter  count  =  4;
+   begin
+      if (clk_count == count- 1) 
+         begin
+            new_clk     <=    ~new_clk;
+            clk_count   <=    2'b0;
+         end
+      else
+         begin
+            new_clk   <=   new_clk;
+            clk_count <=   clk_count + 1;
+        end
+
+     if (new_clk  == out_clk)
+         $display("reset=%b  clk=%b  clk_out=%b and new_clk=%b  : Testcase Pass ",reset,clk,out_clk,new_clk);
+     else
+         $display("reset=%b  clk=%b  clk_out=%b and new_clk=%b  : Testcase Fail ",reset,clk,out_clk,new_clk);
+   end
+endtask
+
+endmodule
