@@ -1,0 +1,25 @@
+module ClockDivider(
+                  reset,
+                  clk,
+                  out_clk                  
+                  );
+
+input             reset, clk;
+output reg        out_clk;
+reg         [1:0] clk_count;
+
+/*Here the clock count is incremented for every positive edge and the out clock is taken as msb of clock count that will be equal to 2 times period of original clock*/
+always @ (posedge clk)
+   begin
+      if (reset)
+         begin
+            clk_count <= 0;
+            out_clk   <= 0;
+         end
+      else
+         begin
+            clk_count <= clk_count + 1;
+            out_clk   <= clk_count[1];
+         end
+   end
+endmodule                                 
