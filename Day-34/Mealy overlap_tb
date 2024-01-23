@@ -1,0 +1,82 @@
+module MealyOL_tb();                                  
+
+reg            in;                                    
+reg            clk;                                   
+reg            reset;                                 
+wire           out;                                   
+parameter      S0 = 0 , S1 = 1 , S2 = 2 , S3 = 3;     
+reg            new_out;                               
+reg      [1:0] ps, ns;                                
+
+Mealy_OL dut(
+             .in(in),         
+             .clk(clk),       
+             .reset(reset),   
+             .out(out)       
+              );
+    
+initial begin
+   clk            = 0;
+   reset          = 1;
+   #20 reset      = 0;
+   forever #5 clk = ~clk;                            
+   end
+  
+initial begin
+   repeat(20)
+      begin
+         stimulus;
+         if (out == new_out)
+            begin
+               $display("input = %b, output = %b, new out = %b, Testcase Pass", in, out, new_out)  ;
+               if (out == 1 && new_out == 1)
+                  $display("Sequence 1101 is detected")                                            ;
+            end
+         else
+            $display("input = %b, output = %b, new out = %b, Testcase Fail", in, out, new_out)     ;
+      end
+$finish                                               ;
+end
+  
+task stimulus                                         ;
+  begin
+    in = $random;@(posedge clk)                       ;
+  end
+endtask
+
+/*State S0 is assigned to present state if the reset is 1 else the next state is assigned to present state*/
+always@(posedge clk or posedge reset)
+   begin
+      if(reset)
+         ps <= S0                                     ;
+      else    
+         ps <= ns                                     ;
+   end
+
+/*Here the states S0, S1, S2, or S3 is assigned according to the input encountered (for the sequence 1101)*/
+always@(ps or in)
+   begin      
+      case(ps)    
+         S0 : begin 
+               new_out  = 0                           ;
+               ns       = in ? S1 : S0                ;
+              end
+         S1 : begin 
+               new_out  = 0                           ;
+               ns       = in ? S2 : S0                ;
+              end
+         S2 : begin 
+               new_out  = 0                           ;
+               ns       = in ? S2 : S3                ;
+               
+              end 
+         S3 : begin 
+               new_out  = in ?  1 : 0                 ;
+               ns       = in ? S1 : S0                ;
+              end
+         default: ns    = S0                          ;
+      endcase
+   end
+
+         
+endmodule                                              
