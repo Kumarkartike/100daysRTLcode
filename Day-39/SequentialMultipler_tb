@@ -1,0 +1,65 @@
+module SeqMul_tb();
+
+reg   [ 7:0]   in_a                                               ;
+reg   [ 7:0]   in_b                                               ;
+reg            clk                                                ;
+reg            load                                               ;
+reg            reset                                              ;
+reg   [15:0]   new_out                                            ;
+reg            new_valid                                          ;
+wire           out_valid                                          ;
+wire  [15:0]   out_prod                                           ;
+
+SeqMul dut(
+            .in_a       (in_a       )                             ,
+            .in_b       (in_b       )                             ,
+            .clk        (clk        )                             ,
+            .load       (load       )                             ,
+            .reset      (reset      )                             ,
+            .out_valid  (out_valid  )                             ,
+            .out_prod   (out_prod   )                            
+             )                                                    ; 
+
+
+initial begin
+   clk            = 1'b0                                          ;
+   forever #5 clk = ~clk                                          ;
+end
+
+initial begin
+   reset       = 1                                                ;
+   load        = 1                                                ;
+   #20 reset   = 0                                                ;
+   #200 $finish                                                   ;
+end
+initial begin
+   stimulus;#40                                                   ;
+   if (out_prod == new_out)
+      $display("input a = %d, input b = %d, design output = %d, testbench output = %d, Testcase Pass", in_a, in_b, out_prod, new_out);
+   else
+      $display("input a = %d, input b = %d, design output = %d, testbench output = %d, Testcase Fail", in_a, in_b, out_prod, new_out);
+end
+
+task stimulus;
+   begin
+      in_a = $random                                              ;
+      in_b = $random                                              ;
+   end
+endtask
+
+/*this block is used to perform direct multiplication for self check*/
+always @ (posedge clk or posedge reset)
+   begin
+      if (reset)
+         begin
+            new_out    <= 16'bz                                   ;
+            new_valid  <= 1'b0                                    ;
+         end
+      else
+         begin
+            if (load)
+               new_out     <= in_a * in_b                         ;
+               new_valid   <=  1'b1                               ;
+         end
+   end
+endmodule                                              
