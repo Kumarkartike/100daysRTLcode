@@ -1,0 +1,17 @@
+module Ringcounter_tb();
+parameter N = 4;
+reg clk,reset;
+wire [N-1:0]count;
+
+Ringcounter dut(clk,reset,count);
+
+always #5 clk = ~clk;
+
+initial begin
+clk = 0;
+reset = 0;
+#20 reset = 1;
+#20reset = 0; 
+#300 $finish;
+end
+endmodule
