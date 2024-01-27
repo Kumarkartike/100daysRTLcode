@@ -1,0 +1,32 @@
+module Trafficlightcontroller_tb();
+
+  parameter CLK_PERIOD = 10; // Clock period in time units
+
+  reg clk;
+  reg reset;
+  wire red, yellow, green;
+
+
+  Trafficlightcontroller dut(
+    .clk(clk),
+    .reset(reset),
+    .red(red),
+    .yellow(yellow),
+    .green(green)
+  );
+
+  always #((CLK_PERIOD / 2)) clk = ~clk;
+
+  initial begin
+    clk = 0;
+    reset = 1; // Assert reset initially
+    #10 reset = 0; // Deassert reset after 10 time units
+    #100 $finish; // Terminate simulation after 100 time units
+  end
+
+  always @(posedge clk) begin
+    $display("Time %0t: Red=%b, Yellow=%b, Green=%b", $time, red, yellow, green);
+  end
+
+endmodule
+
