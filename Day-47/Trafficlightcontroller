@@ -1,0 +1,39 @@
+module Trafficlightcontroller(
+  input wire clk,
+  input wire reset,
+  output reg red,
+  output reg yellow,
+  output reg green
+);
+
+  parameter [1:0] RED = 2'b00, GREEN = 2'b01, YELLOW = 2'b10;
+
+  reg [1:0] state;
+
+  always @(posedge clk or posedge reset) begin
+    if (reset) begin
+      state <= RED; // Initial state on reset
+    end else begin
+      case (state)
+        RED:    state <= GREEN; // Transition to Green after Red
+        GREEN:  state <= YELLOW; // Transition to Yellow after Green
+        YELLOW: state <= RED;    // Transition to Red after Yellow
+        default: state <= RED;    // Default to Red for any other case
+      endcase
+    end
+  end
+
+  always @(posedge clk or posedge reset) begin
+    if (reset) begin
+      red <= 1; green <= 0; yellow <= 0; // Initial state on reset
+    end else begin
+      case (state)
+        RED:    {red, green, yellow} <= 3'b100; // Red state
+        GREEN:  {red, green, yellow} <= 3'b001; // Green state
+        YELLOW: {red, green, yellow} <= 3'b010; // Yellow state
+        default: {red, green, yellow} <= 3'b100; // Default to Red for any other case
+      endcase
+    end
+  end
+
+endmodule
